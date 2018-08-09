@@ -1,5 +1,5 @@
 # heavenlyglory
-## masscan a target(s) and pass the output to Nmap version scanning
+## masscan target(s) and pass the output to Nmap version scanning
 Requires masscan, nmap and python3
 
 ### args
@@ -15,7 +15,7 @@ Requires masscan, nmap and python3
 ```
 
 ### Info
-Most arguments have sensible defaults, only a target/targets and network interface is required.
+Most arguments have sensible defaults, only target(s) and network interface are required.
 
 Output is written to heaven.out in the current working directory by default
 
