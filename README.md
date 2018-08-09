@@ -1,6 +1,6 @@
 # heavenlyglory
 ## masscan target(s) and pass the output to Nmap version scanning
-Requires masscan, nmap and python3
+Requires masscan, nmap and Python 3.
 
 ### args
 ```
@@ -17,15 +17,15 @@ Requires masscan, nmap and python3
 ### Info
 Most arguments have sensible defaults, only target(s) and network interface are required.
 
-Output is written to heaven.out in the current working directory by default
+Output is written to heaven.out in the current working directory by default.
 
 ### Usage Examples
 
 #### Single target
 ```heavenlyglory.py -t 127.0.0.1 -i eth0```
 
-#### targets from file
+#### Targets from file
 ```heavenlyglory.py -tf targets.file -i eth0```
 
-#### single range, keep temporary files, custom nmap flags
+#### Single range, keep temporary files, custom nmap flags
 ```heavenlyglory.py -t 192.168.0.0/24 -i eth0 -k ~/projects/tempscanfiles/ --nmap-flags "-sCV -T3"```
