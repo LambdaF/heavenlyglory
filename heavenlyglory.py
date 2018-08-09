@@ -1,14 +1,14 @@
 #!/bin/python3
 import argparse,os,sys,socket,tempfile,shutil
 
-def performMassScan(flags,interface,targets,tempDir):
+def performMasscan(flags,interface,targets,tempDir):
     for t in targets:
         cmd = "sudo masscan {flags} -i {interface} -oG {tempDir}/mass.scan --append-output {target}".format(flags=flags,interface=interface,tempDir=tempDir,target=t)
         print("[+] {}".format(cmd))
         os.system(cmd)
     return "{}/mass.scan".format(tempDir)
 
-def parseMassScan(scanInput):
+def parseMasscan(scanInput):
     results = {}
     with open(scanInput, 'r') as f:
         for line in f:
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--target", help="Single IP/Hostname or CIDR range of target to scan")
     parser.add_argument("-tf", "--target-file", help="List of targets to scan. Comma or newline seperated")
     parser.add_argument("-n", "--nmap-flags", default="-Pn -sV -T5 --min-rate 1500", help="Flags for Nmap")
-    parser.add_argument("-m", "--massscan-flags", default="-p1-65535 --rate=20000 --wait 0", help="Flags for MassScan")
+    parser.add_argument("-m", "--masscan-flags", default="-p1-65535 --rate=20000 --wait 0", help="Flags for masscan")
     parser.add_argument("-i", "--interface", help="Network interface to use")
     parser.add_argument("-o", "--out-file", default="heaven.out", help="Final result output")
     parser.add_argument("-k", "--keep-temp", default="", help="Directory to keep temporary scan files in. Files will be removed if not specified")
@@ -89,9 +89,9 @@ if __name__ == "__main__":
         
     with tempfile.TemporaryDirectory() as tempDir:
         print("[+] Using Temporary Directory {}".format(tempDir))
-        print("[+] Performing MassScan")
-        resultFile = performMassScan(args.massscan_flags, args.interface, targets, tempDir)
-        results = parseMassScan(resultFile)
+        print("[+] Performing masscan")
+        resultFile = performMasscan(args.masscan_flags, args.interface, targets, tempDir)
+        results = parseMasscan(resultFile)
 
         print("[+] Performing Nmap")
         performNmap(results, args.nmap_flags, tempDir)
