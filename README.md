@@ -2,7 +2,7 @@
 ## masscan target(s) and pass the output to Nmap version scanning
 Requires masscan, nmap and python 3 with "xmltodict" installed
 
-### args
+### Args
 ```
 -h, --help                                          show this help message and exit
 -t TARGET, --target TARGET                          Single IP/Hostname/CIDR/Scope file of target(s) to scan
@@ -17,6 +17,9 @@ Requires masscan, nmap and python 3 with "xmltodict" installed
 Most arguments have sensible defaults, only target(s) and network interface are required.
 
 Output is written to heaven.csv in the current working directory by default.
+
+### Setup
+```pip3 install -r requirements.txt```
 
 ### Usage Examples
 
