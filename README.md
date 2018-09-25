@@ -1,12 +1,11 @@
 # heavenlyglory
 ## masscan target(s) and pass the output to Nmap version scanning
-Requires masscan, nmap and Python 3.
+Requires masscan, nmap and python 3 with "xmltodict" installed
 
 ### args
 ```
 -h, --help                                          show this help message and exit
--t TARGET, --target TARGET                          Single IP/Hostname or CIDR range of target to scan
--tf TARGET_FILE, --target-file TARGET_FILE          List of targets to scan. Comma or newline seperated
+-t TARGET, --target TARGET                          Single IP/Hostname/CIDR/Scope file of target(s) to scan
 -n NMAP_FLAGS, --nmap-flags NMAP_FLAGS              Flags for Nmap
 -m MASSSCAN_FLAGS, --masscan-flags MASSCAN_FLAGS    Flags for MassScan
 -i INTERFACE, --interface INTERFACE                 Network interface to use
@@ -17,7 +16,7 @@ Requires masscan, nmap and Python 3.
 ### Info
 Most arguments have sensible defaults, only target(s) and network interface are required.
 
-Output is written to heaven.out in the current working directory by default.
+Output is written to heaven.csv in the current working directory by default.
 
 ### Usage Examples
 
@@ -25,7 +24,7 @@ Output is written to heaven.out in the current working directory by default.
 ```heavenlyglory.py -t 127.0.0.1 -i eth0```
 
 #### Targets from file
-```heavenlyglory.py -tf targets.file -i eth0```
+```heavenlyglory.py -t ~/projects/targets.file -i eth0```
 
 #### Single range, keep temporary files, custom nmap flags
 ```heavenlyglory.py -t 192.168.0.0/24 -i eth0 -k ~/projects/tempscanfiles/ --nmap-flags "-sCV -T3"```
