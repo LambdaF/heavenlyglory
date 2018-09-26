@@ -83,15 +83,23 @@ def parseOutput(indir):
             ports = None
 
             # see previous comment
-            if isinstance(obj["nmaprun"]["host"]["ports"]["port"], dict):
-                ports = [obj["nmaprun"]["host"]["ports"]["port"]]
-            else:
-                ports = obj["nmaprun"]["host"]["ports"]["port"]
+            try:
+                if isinstance(obj["nmaprun"]["host"]["ports"]["port"], dict):
+                    ports = [obj["nmaprun"]["host"]["ports"]["port"]]
+                else:
+                    ports = obj["nmaprun"]["host"]["ports"]["port"]
+            except:
+                #if all ports are filtered...
+                ports = []
 
             for port in ports:
                 tempDict = {}
                 tempDict["portNumber"] = port["@portid"]
-                tempDict["serviceName"] = port["service"]["@name"]
+                try:
+                    tempDict["serviceName"] = port["service"]["@name"]
+                except:
+                    tempDict["serviceName"] = "unknown"
+
                 try:
                     tempDict["serviceProduct"] = port["service"]["@product"]
                     tempDict["serviceVersion"] = port["service"]["@version"]
