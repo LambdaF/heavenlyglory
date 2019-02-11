@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 from subprocess import check_output
 from itertools import chain
 from urllib.parse import urlparse
