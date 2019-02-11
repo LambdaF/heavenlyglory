@@ -1,14 +1,14 @@
-#!/usr/bin/python3.7
-import argparse
-import ipaddress
-import subprocess
-import asyncio
-import os
-import socket
-import sys
-from urllib.parse import urlparse
-from itertools import chain
+#!/usr/bin/python3
 from subprocess import check_output
+from itertools import chain
+from urllib.parse import urlparse
+import socket
+import os
+import asyncio
+import subprocess
+import ipaddress
+import argparse
+import sys
 
 
 def expandRange(cidr: str) -> list:
