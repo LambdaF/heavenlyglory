@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-from subprocess import check_output
-from itertools import chain
-from urllib.parse import urlparse
 import socket
 import os
 import asyncio
@@ -9,6 +6,9 @@ import subprocess
 import ipaddress
 import argparse
 import sys
+from subprocess import check_output
+from itertools import chain
+from urllib.parse import urlparse
 
 
 def expandRange(cidr: str) -> list:
