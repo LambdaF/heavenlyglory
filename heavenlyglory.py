@@ -1,4 +1,4 @@
-#!./env/bin/python
+#!/usr/bin/python3.7
 import argparse
 import os
 import ipaddress
@@ -124,9 +124,11 @@ async def main(targets, interface, nmapFlags, masscanFlags, outFile):
     results = await asyncio.gather(*[performMasscan(*x) for x in args])
 
     results = await asyncio.gather(*[performNmap(target, ports, nmapFlags)
-                                     for target, ports in results])
+                                     for target, ports in results
+                                     if len(ports) > 0])
 
     with open(outFile, 'w') as f:
+        f.write("Host,Port,Service,Version\n")
         for result in results:
             for line in result:
                 f.write(f"{line}\n")
