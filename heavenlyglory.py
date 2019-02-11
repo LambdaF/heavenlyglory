@@ -112,7 +112,7 @@ async def performNmap(target: str, ports: list, flags: str) -> dict:
 async def main(targets, interface, nmapFlags, masscanFlags, outFile):
     ips = []
     if os.path.isfile(targets):
-        print("[-] Parsing scope file {}".format(targets))
+        print(f"[-] Parsing scope file '{targets}'")
         ips = parseTargets(targets)
     else:
         ips = expandRange(stripScheme(targets))
@@ -121,12 +121,19 @@ async def main(targets, interface, nmapFlags, masscanFlags, outFile):
     check_output(["sudo", "-v"])  # cache creds
 
     args = ((ip, interface, masscanFlags) for ip in ips)
-    results = await asyncio.gather(*[performMasscan(*x) for x in args])
 
+    # Do masscan synchronously to get consistent results
+    print("[-] Performing Masscan(s)...")
+    results = []
+    for x in args:
+        results.append(await performMasscan(*x))
+
+    print("[-] Performing Nmap(s)...")
     results = await asyncio.gather(*[performNmap(target, ports, nmapFlags)
                                      for target, ports in results
                                      if len(ports) > 0])
 
+    print(f"[-] Writing {len(results)} Result(s)")
     with open(outFile, 'w') as f:
         f.write("Host,Port,Service,Version\n")
         for result in results:
