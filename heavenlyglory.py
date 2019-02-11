@@ -5,6 +5,7 @@ import subprocess
 import asyncio
 import os
 import socket
+import sys
 from urllib.parse import urlparse
 from itertools import chain
 from subprocess import check_output
@@ -174,6 +175,9 @@ async def main(targets: str, interface: str, nmapFlags: str, masscanFlags: str,
                 f.write(f"{line}\n")
 
     print(f"[+] Results written to {outFile}")
+    # fix async printing seemingly breaking shell
+    sys.stdout.flush()
+    sys.stderr.flush()
 
 
 if __name__ == "__main__":
