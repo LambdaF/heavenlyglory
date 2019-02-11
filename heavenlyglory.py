@@ -35,8 +35,8 @@ def resolveTarget(target):
     try:
         result = socket.gethostbyname(target)
     except socket.error:
-        print("[!] Error resolving target: {}, exiting".format(target))
-        sys.exit(1)
+        print(f"[!] Error resolving target: {target}")
+        return None
     return result
 
 
@@ -59,6 +59,8 @@ def parseMasscan(target, result) -> list:
 async def performMasscan(target: str, interface: str, flags: list) -> list:
     if target[0].isalpha():
         target = resolveTarget(target)
+    if not target:
+        return [target, []]
     cmd = " ".join(["sudo", "masscan"] + flags.split() +
                    ["-i", interface, target])
     print(f"[+] {cmd}")
