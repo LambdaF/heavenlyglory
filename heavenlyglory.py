@@ -190,7 +190,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--target",
         required=True,
-        help="Single IP/Hostname/CIDR/Scope file of target(s) to scan")
+        help="Single target or file of newline seperated target(s) to scan")
     parser.add_argument(
         "-i", "--interface",
         required=True,

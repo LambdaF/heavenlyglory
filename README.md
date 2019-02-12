@@ -1,25 +1,28 @@
 # heavenlyglory
 ## masscan target(s) and pass the output to Nmap version scanning
-Requires masscan, nmap and python 3 with "xmltodict" installed
+Requires masscan, nmap and python 3.7
 
 ### Args
 ```
--h, --help                                          show this help message and exit
--t TARGET, --target TARGET                          Single IP/Hostname/CIDR/Scope file of target(s) to scan
--n NMAP_FLAGS, --nmap-flags NMAP_FLAGS              Flags for Nmap
--m MASSSCAN_FLAGS, --masscan-flags MASSCAN_FLAGS    Flags for MassScan
--i INTERFACE, --interface INTERFACE                 Network interface to use
--o OUT_FILE, --out-file OUT_FILE                    Final result output
--k KEEP_TEMP, --keep-temp KEEP_TEMP                 Directory to keep temporary scan files in. Files will be removed if not specified
+optional arguments:
+  -h, --help            show this help message and exit
+  -t TARGET, --target TARGET
+                        Single target or file of newline seperated target(s)
+                        to scan
+  -i INTERFACE, --interface INTERFACE
+                        Network interface to use
+  -n NMAP_FLAGS, --nmap-flags NMAP_FLAGS
+                        Flags for Nmap
+  -m MASSCAN_FLAGS, --masscan-flags MASSCAN_FLAGS
+                        Flags for masscan
+  -o OUT_FILE, --out-file OUT_FILE
+                        Final result output
 ```
 
 ### Info
 Most arguments have sensible defaults, only target(s) and network interface are required.
 
 Output is written to heaven.csv in the current working directory by default.
-
-### Setup
-```pip3 install -r requirements.txt```
 
 ### Usage Examples
 
@@ -29,5 +32,5 @@ Output is written to heaven.csv in the current working directory by default.
 #### Targets from file
 ```heavenlyglory.py -t ~/projects/targets.file -i eth0```
 
-#### Single range, keep temporary files, custom nmap flags
-```heavenlyglory.py -t 192.168.0.0/24 -i eth0 -k ~/projects/tempscanfiles/ --nmap-flags "-sCV -T3"```
+#### Single range, custom nmap flags
+```heavenlyglory.py -t 192.168.0.0/24 -i eth0 --nmap-flags "-sCV -T3"```
