@@ -3,3 +3,4 @@ env/
 __pycache__
 paused.conf
 *.txt
+Pipfile
