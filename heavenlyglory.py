@@ -144,7 +144,7 @@ async def main(targets: str, interface: str, nmapFlags: str, masscanFlags: str,
         print(f"[-] Parsing scope file '{targets}'")
         ips = parseTargets(targets)
     else:
-        ips = expandRange(stripScheme(targets))
+        ips = expandRange(hostnameToIP(stripScheme(targets)))
 
     check_output(["sudo", "-v"])  # cache creds
 
