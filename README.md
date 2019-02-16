@@ -34,3 +34,15 @@ Output is written to heaven.csv in the current working directory by default.
 
 #### Single range, custom nmap flags
 ```heavenlyglory.py -t 192.168.0.0/24 -i eth0 --nmap-flags "-sCV -T3"```
+
+### Installing in pipenv
+```
+pipenv install
+pipenv shell
+```
+
+### Running Tests
+```
+pipenv shell
+tox
+```
