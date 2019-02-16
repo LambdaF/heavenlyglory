@@ -15,3 +15,13 @@ def test_noFile():
 def test_badTargetsFile():
     with pytest.raises(Exception):
         parseTargets("./targets/badTargets.txt")
+
+
+def test_valid():
+    assert parseTargets("./targets/valid.txt") == set(["93.184.216.34"])
+
+
+"""
+def test_invalid():
+    assert parseTargets("./targets/invalid.txt") == set([])
+"""
