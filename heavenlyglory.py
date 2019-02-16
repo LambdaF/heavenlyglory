@@ -64,7 +64,7 @@ def parseMasscan(target: str, result: str) -> list:
     return final
 
 
-async def performMasscan(target: str, interface: str, flags: list) -> list:
+async def performMasscan(target: str, flags: list) -> list:
     """
     Invokes masscan with the given target and arguments
     Returns a list containing a the target in the first element
@@ -73,7 +73,7 @@ async def performMasscan(target: str, interface: str, flags: list) -> list:
     if not target:
         return [target, []]
     cmd = " ".join(["sudo", "masscan"] + flags.split() +
-                   ["-i", interface, target])
+                   [target])
     print(f"[+] {cmd}")
 
     proc = await asyncio.create_subprocess_shell(
@@ -131,7 +131,7 @@ async def performNmap(target: str, ports: list, flags: str) -> list:
     return parseNmap(target, result)
 
 
-async def main(targets: str, interface: str, nmapFlags: str, masscanFlags: str,
+async def main(targets: str, nmapFlags: str, masscanFlags: str,
                outFile: str):
     """
     Runs a series of masscans against a given target(s) (synchronous)
@@ -148,7 +148,7 @@ async def main(targets: str, interface: str, nmapFlags: str, masscanFlags: str,
 
     check_output(["sudo", "-v"])  # cache creds
 
-    args = ((ip, interface, masscanFlags) for ip in ips)
+    args = ((ip, masscanFlags) for ip in ips)
 
     # Do masscan synchronously to get consistent results
     print("[-] Performing Masscan(s)...")
@@ -185,10 +185,6 @@ if __name__ == "__main__":
         required=True,
         help="Single target or file of newline seperated target(s) to scan")
     parser.add_argument(
-        "-i", "--interface",
-        required=True,
-        help="Network interface to use")
-    parser.add_argument(
         "-n", "--nmap-flags",
         default="-Pn -sV -T5 --min-rate 1500",
         help="Flags for Nmap")
@@ -203,5 +199,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    asyncio.run(main(args.target, args.interface, args.nmap_flags,
+    asyncio.run(main(args.target, args.nmap_flags,
                      args.masscan_flags, args.out_file))

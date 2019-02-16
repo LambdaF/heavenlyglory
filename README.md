@@ -9,8 +9,6 @@ optional arguments:
   -t TARGET, --target TARGET
                         Single target or file of newline seperated target(s)
                         to scan
-  -i INTERFACE, --interface INTERFACE
-                        Network interface to use
   -n NMAP_FLAGS, --nmap-flags NMAP_FLAGS
                         Flags for Nmap
   -m MASSCAN_FLAGS, --masscan-flags MASSCAN_FLAGS
@@ -20,20 +18,29 @@ optional arguments:
 ```
 
 ### Info
-Most arguments have sensible defaults, only target(s) and network interface are required.
+Most arguments have sensible defaults, only target(s) are required.
+
+The default flags to each application are:
+#### masscan
+```-p1-65535 --rate=20000 --wait=1```
+#### nmap
+```-Pn -sV -T5 --min-rate 1500```
+
+Custom arguments to nmap and masscan can be supplied via the -m and -n arguments respectively,
+these will overwrite the defaults.
 
 Output is written to heaven.csv in the current working directory by default.
 
 ### Usage Examples
 
 #### Single target
-```heavenlyglory.py -t 127.0.0.1 -i eth0```
+```heavenlyglory.py -t 127.0.0.1```
 
 #### Targets from file
-```heavenlyglory.py -t ~/projects/targets.file -i eth0```
+```heavenlyglory.py -t ~/projects/targets.file```
 
 #### Single range, custom nmap flags
-```heavenlyglory.py -t 192.168.0.0/24 -i eth0 --nmap-flags "-sCV -T3"```
+```heavenlyglory.py -t 192.168.0.0/24 --nmap-flags "-sCV -T3"```
 
 ### Installing in pipenv
 ```
