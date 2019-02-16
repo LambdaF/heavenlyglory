@@ -13,16 +13,22 @@ from urllib.parse import urlparse
 
 def expandRange(cidr: str) -> list:
     """ Attempts to expand given CIDR range """
-    if cidr[0].isalpha():
-        return [cidr]
-    else:
-        return [str(ip) for ip in ipaddress.IPv4Network(cidr)]
+    return [str(ip) for ip in ipaddress.IPv4Network(cidr)]
 
 
 def stripScheme(target: str) -> str:
     """ Strips scheme from a given URL """
     parsed = urlparse(target)
     return parsed.hostname if parsed.hostname is not None else parsed.path
+
+
+def hostnameToIP(target: str) -> str:
+    """ Attempts to reduce a given URL to an IP address """
+    try:
+        result = socket.gethostbyname(target)
+    except socket.error:
+        return target
+    return result
 
 
 def parseTargets(fileName: str) -> set:
@@ -32,20 +38,10 @@ def parseTargets(fileName: str) -> set:
     """
     targets = set()
     with open(fileName, 'r') as f:
-        targets = [expandRange(stripScheme(x.strip()))
+        targets = [expandRange(hostnameToIP(stripScheme(x.strip())))
                    for x in f.read().split()]
         targets = chain.from_iterable(targets)
     return set(targets)
-
-
-def hostnameToIP(target: str) -> str:
-    """ Attempts to reduce a given URL to an IP address """
-    try:
-        result = socket.gethostbyname(target)
-    except socket.error:
-        print(f"[!] Error resolving target: {target}")
-        return ""
-    return result
 
 
 def parseMasscan(target: str, result: str) -> list:
@@ -74,8 +70,6 @@ async def performMasscan(target: str, interface: str, flags: list) -> list:
     Returns a list containing a the target in the first element
     And a list of open ports in the second
     """
-    if target[0].isalpha():
-        target = hostnameToIP(target)
     if not target:
         return [target, []]
     cmd = " ".join(["sudo", "masscan"] + flags.split() +
@@ -175,7 +169,6 @@ async def main(targets: str, interface: str, nmapFlags: str, masscanFlags: str,
                 f.write(f"{line}\n")
 
     print(f"[+] Results written to {outFile}")
-    # fix async printing seemingly breaking shell
     sys.stdout.flush()
     sys.stderr.flush()
 
