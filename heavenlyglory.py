@@ -13,6 +13,8 @@ from urllib.parse import urlparse
 
 def expandRange(cidr: str) -> list:
     """ Attempts to expand given CIDR range """
+    if cidr[0].isalpha():
+        return [cidr]
     return [str(ip) for ip in ipaddress.IPv4Network(cidr)]
 
 
