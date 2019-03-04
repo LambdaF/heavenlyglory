@@ -20,8 +20,7 @@ def test_badRange():
 
 
 def test_hostname():
-    with pytest.raises(Exception):
-        expandRange("localhost")
+    assert expandRange("localhost") == ["localhost"]
 
 
 def test_empty():
