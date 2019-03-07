@@ -15,6 +15,8 @@ optional arguments:
                         Flags for masscan
   -o OUT_FILE, --out-file OUT_FILE
                         Final result output
+  -p TASK_POOL_SIZE, --task-pool-size TASK_POOL_SIZE
+                        Set the maximum number of concurrent scans
 ```
 
 ### Info
