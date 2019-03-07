@@ -134,7 +134,7 @@ async def performNmap(target: str, ports: list, flags: str) -> list:
 
 
 async def main(targets: str, nmapFlags: str, masscanFlags: str,
-               outFile: str):
+               outFile: str, maxTasks: int):
     """
     Runs a series of masscans against a given target(s) (synchronous)
     And then passes the open ports to nmap
@@ -159,15 +159,24 @@ async def main(targets: str, nmapFlags: str, masscanFlags: str,
         results.append(await performMasscan(*x))
 
     print("[-] Performing Nmap(s)...")
-    results = await asyncio.gather(*[performNmap(target, ports, nmapFlags)
-                                     for target, ports in results
-                                     if len(ports) > 0])
+    tasks, completed = set(), set()
+    for target, ports in results:
+        if not ports:
+            continue
+        if len(tasks) >= maxTasks:
+            completed, tasks = await asyncio.wait(
+                tasks,
+                return_when=asyncio.FIRST_COMPLETED
+            )
+        tasks.add(asyncio.create_task(performNmap(target, ports, nmapFlags)))
 
-    print(f"[-] Writing {len(results)} Result(s)")
+    completed, tasks = await asyncio.wait(tasks)
+
+    print(f"[-] Writing {len(completed)} Result(s)")
     with open(outFile, 'w') as f:
         f.write("Host,Port,Service,Version\n")
-        for result in results:
-            for line in result:
+        for task in completed:
+            for line in task.result():
                 f.write(f"{line}\n")
 
     print(f"[+] Results written to {outFile}")
@@ -198,8 +207,14 @@ if __name__ == "__main__":
         "-o", "--out-file",
         default="heaven.csv",
         help="Final result output")
+    parser.add_argument(
+        "-p", "--task-pool-size",
+        type=int, default=10,
+        help="Set the maximum number of concurrent scans")
 
     args = parser.parse_args()
 
     asyncio.run(main(args.target, args.nmap_flags,
-                     args.masscan_flags, args.out_file))
+                     args.masscan_flags,
+                     args.out_file,
+                     args.task_pool_size))
