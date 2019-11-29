@@ -94,6 +94,11 @@ def parseNmap(target: str, result: str) -> list:
     In to a list formatted for CSV output, in the form:
     Hostname, port number, service type, service description
     """
+    
+    gnmap = open(target + ".gnmap", "bw+")
+    gnmap.write(result)
+    gnmap.close()
+
     final = []
     result = str(result).split('\\n')
     for r in result:
@@ -120,7 +125,8 @@ async def performNmap(target: str, ports: list, flags: str) -> list:
     Returns a list of results in a format suitable for writing to CSV
     """
     cmd = " ".join(["nmap"] + flags.split() +
-                   ["-p", ",".join(ports), "-oG", "-", target])
+                   # ["-p", ",".join(ports), "-oG", "-", target])
+                   ["-p", ",".join(ports), "-oA", target, "-oG", "-", target])
     print(f"[+] {cmd}")
 
     proc = await asyncio.create_subprocess_shell(
