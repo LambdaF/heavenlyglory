@@ -39,9 +39,10 @@ def parseTargets(fileName: str) -> set:
     Returns a set of results
     """
     targets = set()
-    with open(fileName, 'r') as f:
-        targets = [expandRange(hostnameToIP(stripScheme(x.strip())))
-                   for x in f.read().split()]
+    with open(fileName, "r") as f:
+        targets = [
+            expandRange(hostnameToIP(stripScheme(x.strip()))) for x in f.read().split()
+        ]
         targets = chain.from_iterable(targets)
     return set(targets)
 
@@ -53,13 +54,13 @@ def parseMasscan(target: str, result: str) -> list:
     """
     final = [target]
     ports = set()
-    result = str(result).split('\\r')
+    result = str(result).split("\\r")
     for r in result:
         if "Discovered" in r:
-            for dis in r.split('\\n'):
+            for dis in r.split("\\n"):
                 dis = dis.split()
                 try:
-                    ports.add(dis[3].split('/')[0])
+                    ports.add(dis[3].split("/")[0])
                 except:
                     pass
     final.append(ports)
@@ -74,14 +75,12 @@ async def performMasscan(target: str, flags: list) -> list:
     """
     if not target:
         return [target, []]
-    cmd = " ".join(["sudo", "masscan"] + flags.split() +
-                   [target])
+    cmd = " ".join(["sudo", "masscan"] + flags.split() + [target])
     print(f"[+] {cmd}")
 
     proc = await asyncio.create_subprocess_shell(
-        cmd,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE)
+        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
 
     result, _ = await proc.communicate()
 
@@ -94,19 +93,19 @@ def parseNmap(target: str, result: str) -> list:
     In to a list formatted for CSV output, in the form:
     Hostname, port number, service type, service description
     """
-    
+
     with open(target + ".gnmap", "bw+") as gnmap:
         gnmap.write(result)
 
     final = []
-    result = str(result).split('\\n')
+    result = str(result).split("\\n")
     for r in result:
         if "Ports:" in r:
-            r = r.split('\\t')[1]  # ports
-            r = r.split(',')
+            r = r.split("\\t")[1]  # ports
+            r = r.split(",")
             firstRun = True
             for port in r:
-                port = port.lstrip("Ports: ").split('/')
+                port = port.lstrip("Ports: ").split("/")
                 first = ".."
                 if firstRun:
                     first = target
@@ -123,23 +122,27 @@ async def performNmap(target: str, ports: list, flags: str) -> list:
     Invokes nmap with a given list of ports, target and flags
     Returns a list of results in a format suitable for writing to CSV
     """
-    cmd = " ".join(["nmap"] + flags.split() +
-                   # ["-p", ",".join(ports), "-oG", "-", target])
-                   ["-p", ",".join(ports), "-oA", target, "-oG", "-", target])
+    cmd = " ".join(
+        ["nmap"]
+        + flags.split()
+        +
+        # ["-p", ",".join(ports), "-oG", "-", target])
+        ["-p", ",".join(ports), "-oA", target, "-oG", "-", target]
+    )
     print(f"[+] {cmd}")
 
     proc = await asyncio.create_subprocess_shell(
-        cmd,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE)
+        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
 
     result, _ = await proc.communicate()
 
     return parseNmap(target, result)
 
 
-async def main(targets: str, nmapFlags: str, masscanFlags: str,
-               outFile: str, maxTasks: int):
+async def main(
+    targets: str, nmapFlags: str, masscanFlags: str, outFile: str, maxTasks: int
+):
     """
     Runs a series of masscans against a given target(s) (synchronous)
     And then passes the open ports to nmap
@@ -170,15 +173,14 @@ async def main(targets: str, nmapFlags: str, masscanFlags: str,
             continue
         if len(tasks) >= maxTasks:
             completed, tasks = await asyncio.wait(
-                tasks,
-                return_when=asyncio.FIRST_COMPLETED
+                tasks, return_when=asyncio.FIRST_COMPLETED
             )
         tasks.add(asyncio.create_task(performNmap(target, ports, nmapFlags)))
 
     completed, tasks = await asyncio.wait(tasks)
 
     print(f"[-] Writing {len(completed)} Result(s)")
-    with open(outFile, 'w') as f:
+    with open(outFile, "w") as f:
         f.write("Host,Port,Service,Version\n")
         for task in completed:
             for line in task.result():
@@ -195,31 +197,45 @@ if __name__ == "__main__":
     print("*** Or you will miss all that heavenly glory.\n")
 
     parser = argparse.ArgumentParser(
-        "Performs masscan and passes the output to Nmap version scan")
+        "Performs masscan and passes the output to Nmap version scan"
+    )
     parser.add_argument(
-        "-t", "--target",
+        "-t",
+        "--target",
         required=True,
-        help="Single target or file of newline seperated target(s) to scan")
+        help="Single target or file of newline seperated target(s) to scan",
+    )
     parser.add_argument(
-        "-n", "--nmap-flags",
+        "-n",
+        "--nmap-flags",
         default="-Pn -sV -T5 --min-rate 1500",
-        help="Flags for Nmap")
+        help="Flags for Nmap",
+    )
     parser.add_argument(
-        "-m", "--masscan-flags",
+        "-m",
+        "--masscan-flags",
         default="-p1-65535 --rate=20000 --wait=1",
-        help="Flags for masscan")
+        help="Flags for masscan",
+    )
     parser.add_argument(
-        "-o", "--out-file",
-        default="heaven.csv",
-        help="Final result output")
+        "-o", "--out-file", default="heaven.csv", help="Final result output"
+    )
     parser.add_argument(
-        "-p", "--task-pool-size",
-        type=int, default=10,
-        help="Set the maximum number of concurrent scans")
+        "-p",
+        "--task-pool-size",
+        type=int,
+        default=10,
+        help="Set the maximum number of concurrent scans",
+    )
 
     args = parser.parse_args()
 
-    asyncio.run(main(args.target, args.nmap_flags,
-                     args.masscan_flags,
-                     args.out_file,
-                     args.task_pool_size))
+    asyncio.run(
+        main(
+            args.target,
+            args.nmap_flags,
+            args.masscan_flags,
+            args.out_file,
+            args.task_pool_size,
+        )
+    )
