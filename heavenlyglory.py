@@ -95,9 +95,8 @@ def parseNmap(target: str, result: str) -> list:
     Hostname, port number, service type, service description
     """
     
-    gnmap = open(target + ".gnmap", "bw+")
-    gnmap.write(result)
-    gnmap.close()
+    with open(target + ".gnmap", "bw+") as gnmap:
+        gnmap.write(result)
 
     final = []
     result = str(result).split('\\n')
